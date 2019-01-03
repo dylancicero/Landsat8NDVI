@@ -1,4 +1,6 @@
-###Landsat8NDVI
+# Landsat8 Get NDVI Application
+
+## Overview
 
 This application computes the average "Normalized Difference Vegetation Index" (NDVI) for a given
 Region of Interest based of available Landsat8 satellite data.  NDVI is a remote sensing index that uses the relative differences
@@ -7,11 +9,13 @@ in the reflectance properties of the Near-Infrared wavelength of light and the R
 This index is highly correletated with green vegetative biomass, gross primary productivity, and other ecological
 measures, and is used often within the remote sensing literature.
 
-This application uses the Google Maps Javascript API, allowing users to specify a polygon for their
+## Technical Specifications
+
+This flask application uses the Google Maps Javascript API, allowing users to specify a polygon for their
 region of interest on a Google Map.  The coordinates of a polygon are specified in the API in an
 "MVC Array" object.  Upon completion of the polygon drawing event, the MVC Array for the specified polygon
 is queried in javascript from the html form, these coordinates are reconfigured to a "standard" javascript array,
-the array is then "stringified" to allow this information to be sent to the server.  The use is then asked
+the array is then "stringified" to allow this information to be sent to the server.  The user is then asked
 to click a hyperlink button to actually submit this information.  Upon clicking the hyperlink,
 the information is sent to the server using Ajax, and a "success" alert is fired to alert the user the polygon has
 been submitted.  These polygon coordinates are upacked in a "./reciever" endroute in the python controller,
@@ -39,4 +43,8 @@ Finally, the NDVI value and the date for the image on which NDVI is based are re
 
 An accompanying CSS file was created to stylize my app.
 
-I am currently troubleshooting deployment of the app to the Google cloud server.
+
+### Deployment and Installation
+
+I am currently troubleshooting deployment of the app to the Google cloud server.  (Deployment locally is not possible given 
+private authorization credentials to connect to the Google Earth Engine service account).
