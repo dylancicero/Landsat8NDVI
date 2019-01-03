@@ -1,0 +1,73 @@
+<html>
+  <head>
+  <style>
+    /* Always set the map height explicitly to define the size of the div
+     * element that contains the map. */
+    #map {
+      height: 100%;
+    }
+    /* Optional: Makes the sample page fill the window. */
+    html, body {
+      height: 80%;
+      margin: 1%;
+      padding: 0;
+    }
+  </style>
+    <title>Submit a form</title>
+   <link rel="stylesheet" type="text/css" href="/static/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="pagetitle">
+      <h1>Draw Region of Interest</h1>
+    </div>
+    <div id="map"></div>
+    <div id="container">
+      <a href="/mapped" id="theButton">Submit</a>
+    </div>
+    <script type="text/javascript">
+      // Define "stringified" as a global variable
+      var stringified
+      // Initialize the map
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 39.655, lng: -96.677},
+          zoom: 4
+        });
+        // Initialize the drawing manager
+        var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: google.maps.drawing.OverlayType.POLYGON,
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: ['polygon']
+          }
+        });
+        drawingManager.setMap(map);
+
+        google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event){
+          var verticesMVC = event.overlay.getPath();
+          var verticesArray = verticesMVC.getArray();
+          stringified = JSON.stringify(verticesArray);
+          console.log(stringified);
+        });
+
+        // function to submit the polygon vertices to server
+        document.getElementById("theButton").onclick = function(){
+          submitToServer()
+          console.log(stringified);
+        };
+        function submitToServer() {
+          // ajax the JSON to the submitToServer
+          $.post('/mapped', stringified, function(){
+
+        	});
+        // event.preventDefault();
+        }
+      }
+    </script>
+    <!-- // Load the Google Maps API using callback function.  Include the Google Maps drawing library. -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUQ_FEPgefZIhMj7_PpOr70PreveECDf0&libraries=drawing&callback=initMap"
+         async defer></script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+
+html {
+  background-color: ##fffdfc
+}
+
+body {
+  /* Use the Roboto font that is loaded in the <head> */
+  font-family: 'Roboto', sans-serif;
+  height: 80%;
+  margin: 1%;
+  padding: 0;
+}
+
+h3 {
+  color: #537fbe;
+  font-size: 2em
+}
+
+nav {
+}
+
+.navbar-brand
+{
+    /* size for brand */
+    font-size: xx-large;
+    color: #537fbe;
+}
+
+a {
+  color: #0000ff
+}
+
+.region {
+  font-size: 1.25em;
+}
+
+div.available{
+  color:#adb2b5;
+}
+
+input[type=submit] {
+  background:#ccc
+}
+
+#map {
+  height: 80%;
+  margin: 1%;
+  padding: 0;
+}

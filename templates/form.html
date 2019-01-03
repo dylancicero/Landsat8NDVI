@@ -1,0 +1,138 @@
+<html>
+  <head>
+
+  <!-- <style>
+    /* Always set the map height explicitly to define the size of the div
+     * element that contains the map. */
+    #map {
+      height: 100%;
+    }
+    /* Optional: Makes the sample page fill the window. */
+    html, body {
+      height: 80%;
+      margin: 1%;
+      padding: 0;
+    }
+  </style> -->
+
+  <title>Submit a form</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="/static/style.css">
+  </head>
+  <body>
+    <nav>
+    <p class="navbar-brand"> LANDSAT 8: Get NDVI</p>
+    </nav>
+    <div class = "instructions">
+      <p class="text"> This application computes the average Normalized Difference
+        Vegetation Index <a href=https://en.wikipedia.org/wiki/Normalized_difference_vegetation_index>(NDVI)</a>
+        for a given Region of Interest based off of available <a href= https://landsat.usgs.gov/landsat-8> Landsat 8 </a>
+        data.  NDVI is computed for the first available image after the selected date.  A returned
+        value on "none" indicates that the full region of interest was under cloud cover at image acquisition time.
+    </div><br/>
+    <div class="pagetitle">
+      <h4>1) Select Region of Interest</h4>
+      <p> Region may not exceed 10 square kilometers </p>
+    </div>
+    <div id="map"></div><br />
+    <a class = "region" href="" id="theButton">Add Region of Interest</a><br/>
+    <div id="container"><br />
+      <h4>2) Select Date </h4>
+      <div class=available>
+      <p> Must be at least 16 days prior to today's date to ensure image availability</p>
+      </div>
+      <div id="main">
+        <form method="post" action="formsubmit" id="form1">
+          <label for="start_date">Start Date:</label>
+          <input type="date" name="doi"><br /> <br />
+          <input type="submit" value="Submit" name="theButton">
+        </form>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+      // Define global variable stringified.  Value is populated later in
+      // local function, but global variable necesseary to send to server.
+      var stringified
+
+      // Initialize the map
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 39.655, lng: -96.677},
+          zoom: 4
+        });
+
+        // Define the drawing manager and add it to the map
+        var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: google.maps.drawing.OverlayType.POLYGON,
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: ['polygon']
+          }
+        });
+        drawingManager.setMap(map);
+
+        // Wait for the user to finish drawing the polygon.
+        // Package the coordinates of the polygon in a stringified array.
+        // JSON.stringify necesseary to send information to the server.
+        // (https://www.w3schools.com/js/js_json_stringify.asp)
+        google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event){
+          var verticesMVC = event.overlay.getPath();
+          var verticesArray = verticesMVC.getArray();
+          stringified = JSON.stringify(verticesArray);
+        });
+
+        // function to submit the polygon vertices to server
+        document.getElementById("theButton").onclick = function(){
+          submitToServer()
+        };
+        function submitToServer() {
+          // ajax the JSON to the submitToServer
+          $.post('/reciever', stringified, function(){
+            alert("Success!");
+        	});
+        // prevent the html link from firing, so that polygon info is sent to submitToServer
+        // via AJAX but page remains the same.
+        event.preventDefault();
+        }
+      }
+    </script>
+    <script>
+      // Alert the user if polygon or date not submitted to server
+      document.querySelector('form').onsubmit = function(event) {
+          event.preventDefault();
+
+          $.get("/reciever", function(data){
+
+              if (data == false)
+              {
+                  alert("Please draw and submit polygon!");
+              }
+              else
+              {
+                var date = document.querySelector('input[name=doi]').value;
+                  $.get("/check",{date:date}, function(data){
+
+                      if (data == false)
+                      {
+                          alert("Please enter valid date!");
+                      }
+                      else {
+                        document.querySelector('form').submit();
+                           }
+                    });
+                };
+              });
+            };
+
+    </script>
+    <!-- Include Google Maps API (with personal API key) and Google Maps drawing library.
+    Callback function allows script to be included at bottom of page -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUQ_FEPgefZIhMj7_PpOr70PreveECDf0&libraries=drawing&callback=initMap"
+         async defer></script>
+  </body>
+</html>

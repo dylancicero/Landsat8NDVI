@@ -1,0 +1,9 @@
+docutils==0.14
+earthengine-api==0.1.163
+Flask==1.0.2
+google-api-python-client==1.7.6
+google-auth==1.6.1
+google-auth-httplib2==0.0.3
+httplib2==0.12.0
+requests==2.19.1
+six==1.11.0
